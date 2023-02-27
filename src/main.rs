@@ -10,6 +10,7 @@ enum Cards {
     Number(u8),
 }
 
+#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 enum Winner {
     Player1,
     Player2,
@@ -68,9 +69,20 @@ fn main() {
 
         let p1_card = hand_1.pop().unwrap();
         let p2_card = hand_2.pop().unwrap();
+
+        if at_risk.len() > 0 {
+            if let Some(p1_sacrified) = hand_1.pop() {
+                at_risk.push(p1_sacrified);
+            }
+            if let Some(p2_sacrified) = hand_2.pop() {
+                at_risk.push(p2_sacrified);
+            }
+        }
+
         at_risk.push(p1_card);
         at_risk.push(p2_card);
-        match p1_card.compare(&p2_card) {
+        let res = p1_card.compare(&p2_card);
+        match res {
             Winner::Player1 => {
                 at_risk.iter().for_each(|card| hand_1.push(*card));
                 at_risk.clear();
@@ -81,7 +93,7 @@ fn main() {
             },
             Winner::Draw => {},
         }
-        println!("At risk: {:?}, Player 1: {:?} vs Player 2: {:?}", at_risk.len(), hand_1.len(), hand_2.len());
+        println!("{:?}: At risk: {:?}, Player 1: {:?} vs Player 2: {:?}", res, at_risk.len(), hand_1.len(), hand_2.len());
     }
 
 }
